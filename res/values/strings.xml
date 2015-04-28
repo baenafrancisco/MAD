@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MappingApp</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    
+    <string name="addPOI">Add new POI</string>
+    <string name="poiname">POI Name</string>
+    <string name="poitype">POI Type</string>
+    <string name="poidescription">Description</string>
+
+</resources>
