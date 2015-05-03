@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen>
+    <CheckBoxPreference xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:key="autoupload" 
+    android:defaultValue="true" 
+    android:title="Auto-upload" 
+	android:summary="Auto-upload POIs to the web service?">
+	</CheckBoxPreference>
+    
+</PreferenceScreen>
+
