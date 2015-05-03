@@ -14,6 +14,7 @@ import com.mapquest.android.maps.OverlayItem;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -29,6 +30,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -38,6 +40,7 @@ import java.net.URL;
 import android.content.Context;
 import android.app.AlertDialog;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 
 
 
@@ -67,6 +70,47 @@ public class MainActivity extends MapActivity implements LocationListener {
 	            setPositiveButton("OK",null).show();
 	    }
 	}
+	/**
+	 * AsyncTask to save POIs to Internet
+	 * @author franbaena
+	 */
+	class POISOutInt extends AsyncTask<String,Void,String>{
+		
+		protected String doInBackground(String... params) {
+			String message = "";
+			HttpURLConnection conn = null;
+            try{
+                URL url = new URL("http://www.free-map.org.uk/course/mad/ws/addpoi.php");
+                 conn = (HttpURLConnection) url.openConnection();
+                 
+                 String postData = params[0];
+                 conn.setDoOutput(true);
+                 conn.setFixedLengthStreamingMode(postData.length());
+                 OutputStream out = null;
+                 out = conn.getOutputStream();
+                 out.write(postData.getBytes());
+                if(conn.getResponseCode() == 200){
+                	message = "success!";
+                } else{
+                	message = "error!";
+                }
+                    
+                
+            }catch(IOException e){
+            	message = "error!";
+            } finally {
+                if(conn!=null){
+                	 conn.disconnect();
+                }    
+            }
+	        return message;
+		}
+		
+		public void onPostExecute(String message){
+			Log.d("Fran Cat", message);
+	    }
+	}
+	
 	/**
 	 * AsyncTask to load POIs from a file
 	 * @author franbaena
@@ -140,9 +184,11 @@ public class MainActivity extends MapActivity implements LocationListener {
 	List<POI> pois;
 	LocationManager mgr;
 	Location last_known_location; // Stores the last known location
+	SharedPreferences preferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         setContentView(R.layout.activity_main);
         GeoPoint map_center;
         Location start_location = null;
@@ -303,13 +349,17 @@ public class MainActivity extends MapActivity implements LocationListener {
                 pois.add(new_poi); // The new POI is added to the pois list
                 
                 //And a new marker is added to the map
-                addMarker(new_poi.position(), 
-                			new_poi.name(),
-                			new_poi.description());                
+                addMarker(new_poi);         
                 
-                //Log.d("Fran Cat", new_poi.toString());
-                Log.d("Fran Cat", new_poi.toJSON());
-                
+               if(preferences.getBoolean("autoupload", true)){
+            	   // Handle Upload
+            	   String postData = "username=user006&name=" + new_poi.name() 
+            			   + "&type=" + new_poi.type() 
+            			   + "&lat=" + new_poi.latitude() 
+            			   + "&lon=" + new_poi.longitude();
+            	   POISOutInt postPOI = new POISOutInt();
+            	   postPOI.execute(postData);
+               }
             }
         }
     	
