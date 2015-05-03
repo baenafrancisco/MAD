@@ -9,5 +9,11 @@
     <string name="poiname">POI Name</string>
     <string name="poitype">POI Type</string>
     <string name="poidescription">Description</string>
+    
+    <string name="loadFromFile">Load POIs from FILE</string>
+    <string name="loadFromInternet">Load POIs from Internet</string>
+    <string name="saveToFile">Save POIs to FILE</string>
+    
+    <string name="preferences">Preferences</string>
 
 </resources>

@@ -1,6 +1,12 @@
 package com.franbaena.mappingapp;
 
+import android.util.Log;
+
 import com.mapquest.android.maps.GeoPoint;
+
+
+import org.json.JSONObject;
+import org.json.JSONException;
 
 /**
  * @author Francisco Baena (baena.francisco@gmail.com)
@@ -10,13 +16,46 @@ public class POI {
 	
 	private String name, type, description;
 	private double latitude, longitude;
-	
+	/**
+	 * Constructs a new POI specifying its parameters
+	 * 
+	 * @param n	name
+	 * @param t	type
+	 * @param d	description
+	 * @param lat	latitude
+	 * @param lon	longitude
+	 */
 	public POI(String n, String t, String d, double lat, double lon){
 		name = n;
 		type = t;
 		description = d;
 		latitude = lat;
 		longitude = lon;
+	}
+	
+	/**
+	 * Constructs a new POI from JSONObject instance
+	 * @param o	JSONObject instance representing a POI
+	 */
+	public POI(JSONObject o){
+		try{
+			name = o.getString("name");
+			type = o.getString("type");
+			description = o.getString("description");
+			latitude = o.getDouble("lat");
+			longitude = o.getDouble("lon");
+		} catch (JSONException e){
+			Log.d("Fran Cat", "There's been a JSON error!" + e.getMessage());
+		}	
+	}
+	
+	/**
+	 * Constructs a new POI from JSON String
+	 * @param json	JSON string
+	 * @throws JSONException 
+	 */
+	public POI(String json) throws JSONException{
+		this(new JSONObject(json));
 	}
 	
 	/**
@@ -65,6 +104,31 @@ public class POI {
 	}
 	public void description(String d){
 		description = d;
+	}
+	
+	/** 
+	 * Returns a org.json.JSONObject with information about the POI
+	 * @return org.json.JSONObject with information about the POI
+	 */
+	public JSONObject toJSONObject(){
+		JSONObject o = new JSONObject();
+		try{
+			o.put("name", name);
+			o.put("type", type);
+			o.put("description", description);
+			o.put("lat", latitude);
+			o.put("lon", longitude);
+		} catch (JSONException e){
+			Log.d("Fran Cat", "There's been a JSON error!" + e.getMessage());
+		}
+		return o;
+	}
+	/**
+	 * Returns a String with information about the POI
+	 * @return JSON String with with information about the POI
+	 */
+	public String toJSON(){
+		return toJSONObject().toString();
 	}
 
 	public String toString(){

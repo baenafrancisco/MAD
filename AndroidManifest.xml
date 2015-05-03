@@ -9,6 +9,8 @@
         android:targetSdkVersion="15" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +31,13 @@
                 android:label=
     		"@string/addPOI">
     	</activity>
+        <activity android:name=".MyPreferences">
+            <intent-filter>
+            	<action android:name=".MyPreferences" />
+            	<category android:name="android.intent.cetagory.PREFERENCE" />
+        	</intent-filter>
+        </activity>
+    	
     </application>
 
 </manifest>
