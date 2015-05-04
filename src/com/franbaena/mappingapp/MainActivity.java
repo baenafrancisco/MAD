@@ -355,6 +355,7 @@ public class MainActivity extends MapActivity implements LocationListener {
             	   // Handle Upload
             	   String postData = "username=user006&name=" + new_poi.name() 
             			   + "&type=" + new_poi.type() 
+            			   + "&description=" + new_poi.description()
             			   + "&lat=" + new_poi.latitude() 
             			   + "&lon=" + new_poi.longitude();
             	   POISOutInt postPOI = new POISOutInt();

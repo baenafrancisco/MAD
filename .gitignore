@@ -1,5 +1,6 @@
 # SD Card
 SDCard.iso
+SDCard.iso.lock
 
 # Built application files
 *.apk
