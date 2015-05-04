@@ -43,7 +43,6 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 
-
 public class MainActivity extends MapActivity implements LocationListener {
 	/**
 	 * AsyncTask to save POIs to a file
@@ -186,6 +185,11 @@ public class MainActivity extends MapActivity implements LocationListener {
 	Location last_known_location; // Stores the last known location
 	SharedPreferences preferences;
     @Override
+    
+    public Object onRetainNonConfigurationInstance() {
+    	   return this.pois;
+    }
+    
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -196,6 +200,7 @@ public class MainActivity extends MapActivity implements LocationListener {
         /* Set Location Manager*/
         mgr=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
         mgr.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
+        //Is it working?
         
         if(mgr.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
         	start_location = mgr.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -210,7 +215,7 @@ public class MainActivity extends MapActivity implements LocationListener {
         	// For emulator info, if not ready we fake it
         	start_location = new Location(LocationManager.GPS_PROVIDER);
         	start_location.setLatitude(50.907987);
-        	start_location.setLongitude(1.4002);
+        	start_location.setLongitude(-1.4002);
         } 
         
         last_known_location = start_location;
@@ -219,9 +224,20 @@ public class MainActivity extends MapActivity implements LocationListener {
         
         map = (MapView)findViewById(R.id.map1);
         map.setBuiltInZoomControls(true);
-        map.getController().setZoom(14);
+        map.getController().setZoom(16);
         map.getController().setCenter(map_center);
-        pois = new ArrayList<POI>();
+        
+        
+        /* If list of POIS exists, loads it */
+        Object prevList = (Object)getLastNonConfigurationInstance();
+        if (prevList==null){
+        	pois = new ArrayList<POI>();
+        } else {
+        	pois = (List<POI>) prevList;
+        	for (POI p : pois){
+        		addMarker(p);
+        	}
+        }
         
         Log.d("Fran Cat", "App Started!");
     }
@@ -310,7 +326,14 @@ public class MainActivity extends MapActivity implements LocationListener {
         // Handle action bar item clicks here
     	
         int id = item.getItemId();
-        if (id == R.id.addPOI) {
+        if  (id == R.id.viewPOIList){
+        	
+        	Intent intent = new Intent(this,POIListActivity.class);
+        	intent.putExtra("poi_names", poi_names());
+        	intent.putExtra("poi_descriptions", poi_descriptions());
+        	startActivityForResult(intent,1);
+        } else if (id == R.id.addPOI) {
+
         	// Add POI menu item
         	Intent intent = new Intent(this,AddPOIActivity.class);
         	startActivityForResult(intent,0);
@@ -355,13 +378,18 @@ public class MainActivity extends MapActivity implements LocationListener {
             	   // Handle Upload
             	   String postData = "username=user006&name=" + new_poi.name() 
             			   + "&type=" + new_poi.type() 
-            			   + "&description=" + new_poi.description()
+            			   + "&description=" + new_poi.description() 
             			   + "&lat=" + new_poi.latitude() 
             			   + "&lon=" + new_poi.longitude();
             	   POISOutInt postPOI = new POISOutInt();
             	   postPOI.execute(postData);
                }
             }
+        } else if(requestCode==1){
+        	if (resultCode==RESULT_OK){
+        		Bundle extras=intent.getExtras();
+        		centerMapIn(extras.getInt("com.franbaena.mappingapp.poi_id"));
+        	}
         }
     	
     }
@@ -411,5 +439,26 @@ public class MainActivity extends MapActivity implements LocationListener {
 		super.onStop();
 		
 	}
+	
+	public String[] poi_names(){
+		String[] entries = new String[pois.size()];
+		for (int i=0; i<pois.size(); i++){
+			entries[i] = pois.get(i).name();
+		}
+    	return entries;
+    }
+
+    public String[] poi_descriptions(){
+    	String[] entries = new String[pois.size()];
+		for (int i=0; i<pois.size(); i++){
+			String s = pois.get(i).description();
+			entries[i] = s.substring(0, Math.min(s.length(), 10)).concat("...");
+		}
+		return entries;
+    }
+    
+    public void centerMapIn(int poi_index){
+    	map.getController().setCenter(pois.get(poi_index).position());
+    }
 
 }

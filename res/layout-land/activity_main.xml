@@ -1,0 +1,26 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    tools:context=".MainActivity" >
+
+    <fragment
+        android:id="@+id/poiListFragmentLandscape"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="match_parent"
+        class="com.franbaena.mappingapp.POIListFragment" >
+    </fragment>
+
+    
+    <com.mapquest.android.maps.MapView
+    	android:layout_width="0dp"
+    	android:layout_weight="1"
+    	android:layout_height="match_parent"
+    	android:enabled="true"
+    	android:clickable="true"
+    	android:id="@+id/map1"
+    />
+
+</LinearLayout>

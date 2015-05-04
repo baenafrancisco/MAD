@@ -37,6 +37,10 @@
             	<category android:name="android.intent.cetagory.PREFERENCE" />
         	</intent-filter>
         </activity>
+        <activity
+            android:name=".POIListActivity"
+            android:label="@string/poi_list_activity" >
+        </activity>
     	
     </application>
 
